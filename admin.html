@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Panel - Placemate</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    .admin-table-actions button {
+      margin-right: 10px;
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      border: none;
+      transition: background-color 0.3s;
+    }
+    .approve-btn { background-color: #4CAF50; color: white; }
+    .reject-btn { background-color: #E74C3C; color: white; }
+    .approve-btn:hover { background-color: #45a049; }
+    .reject-btn:hover { background-color: #c0392b; }
+    .status-approved { color: green; font-weight: bold; }
+    .status-rejected { color: red; font-weight: bold; }
+    .status-pending { color: orange; font-weight: bold; }
+  </style>
+</head>
+
+<body>
+  <header>
+    <nav>
+      <div class="logo">Placemate Admin</div>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="admin.html">Admin Panel</a></li>
+        <li><a href="#" onclick="logout()" class="btn">Logout</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- ===== Venue Section ===== -->
+  <section class="booked-venues">
+    <h2 style="text-align:center;">Pending Venue Bookings</h2>
+    <div class="bookings-table-container">
+      <table class="bookings-table">
+        <thead>
+          <tr>
+            <th>Venue</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="booking-table-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ===== Equipment Section ===== -->
+  <section class="booked-equipment">
+    <h2 style="text-align:center;">Pending Equipment Bookings</h2>
+    <div class="bookings-table-container">
+      <table class="bookings-table">
+        <thead>
+          <tr>
+            <th>Equipment</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="equipment-booking-table-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 Placemate. All rights reserved.</p>
+    <p>Vidyalankar Institute of Technology, Mumbai</p>
+  </footer>
+
+  <script>
+    const BASE_URL = "http://localhost:3002/api";
+
+    // ===== Venue Bookings =====
+    async function fetchVenueBookings() {
+      try {
+        const res = await fetch(`${BASE_URL}/bookings`);
+        if (!res.ok) throw new Error(`Failed to fetch venue bookings (${res.status})`);
+        const bookings = await res.json();
+
+        const tableBody = document.getElementById("booking-table-body");
+        tableBody.innerHTML = "";
+
+        if (!bookings.length) {
+          tableBody.innerHTML = `<tr><td colspan="7">No venue bookings yet.</td></tr>`;
+          return;
+        }
+
+        bookings.forEach(b => {
+          const status = b.status || "pending";
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${b.venue}</td>
+            <td>${b.name}</td>
+            <td>${b.email}</td>
+            <td>${b.booking_date}</td>
+            <td>${b.start_time} - ${b.end_time}</td>
+            <td class="status-${status}">${status}</td>
+            <td class="admin-table-actions">
+              ${status === "pending" ? `
+                <button class="approve-btn" onclick="updateVenueStatus(${b.id}, 'approved')">Approve</button>
+                <button class="reject-btn" onclick="updateVenueStatus(${b.id}, 'rejected')">Reject</button>
+              ` : ""}
+            </td>
+          `;
+          tableBody.appendChild(row);
+        });
+      } catch (err) {
+        console.error("Error fetching venue bookings:", err);
+        alert("Failed to load venue bookings.");
+      }
+    }
+
+    async function updateVenueStatus(id, status) {
+      try {
+        console.log("Updating venue:", { id, status });
+        const res = await fetch(`${BASE_URL}/bookings/${id}/${status}`, { method: "PUT" });
+
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        console.log("Venue status updated successfully!");
+        await fetchVenueBookings();
+      } catch (err) {
+        console.error("Error updating venue status:", err);
+        alert("Failed to update venue status: " + err.message);
+      }
+    }
+
+    // ===== Equipment Bookings =====
+    async function fetchEquipmentBookings() {
+      try {
+        const res = await fetch(`${BASE_URL}/equipment-bookings`);
+        if (!res.ok) throw new Error(`Failed to fetch equipment bookings (${res.status})`);
+        const bookings = await res.json();
+
+        const tableBody = document.getElementById("equipment-booking-table-body");
+        tableBody.innerHTML = "";
+
+        if (!bookings.length) {
+          tableBody.innerHTML = `<tr><td colspan="7">No equipment bookings yet.</td></tr>`;
+          return;
+        }
+
+        bookings.forEach(b => {
+          const status = b.status || "pending";
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${b.equipment}</td>
+            <td>${b.name}</td>
+            <td>${b.email}</td>
+            <td>${b.booking_date}</td>
+            <td>${b.start_time} - ${b.end_time}</td>
+            <td class="status-${status}">${status}</td>
+            <td class="admin-table-actions">
+              ${status === "pending" ? `
+                <button class="approve-btn" onclick="updateEquipmentStatus(${b.id}, 'approved')">Approve</button>
+                <button class="reject-btn" onclick="updateEquipmentStatus(${b.id}, 'rejected')">Reject</button>
+              ` : ""}
+            </td>
+          `;
+          tableBody.appendChild(row);
+        });
+      } catch (err) {
+        console.error("Error fetching equipment bookings:", err);
+        alert("Failed to load equipment bookings.");
+      }
+    }
+
+    async function updateEquipmentStatus(id, status) {
+      try {
+        console.log("Updating equipment:", { id, status });
+        const res = await fetch(`${BASE_URL}/equipment-bookings/${id}/${status}`, { method: "PUT" });
+
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        console.log("Equipment status updated successfully!");
+        await fetchEquipmentBookings();
+      } catch (err) {
+        console.error("Error updating equipment status:", err);
+        alert("Failed to update equipment status: " + err.message);
+      }
+    }
+
+    // ===== Logout =====
+    function logout() {
+      localStorage.removeItem("loggedInUser");
+      window.location.href = "login.html";
+    }
+
+    // ===== Page Load =====
+    fetchVenueBookings();
+    fetchEquipmentBookings();
+  </script>
+</body>
+</html>

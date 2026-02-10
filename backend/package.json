@@ -1,0 +1,19 @@
+{
+  "name": "placemate-backend",
+  "version": "1.0.0",
+  "description": "Backend for Placemate login and signup with PostgreSQL",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^4.21.2",
+    "mysql2": "^3.15.2",
+    "nodemailer": "^6.10.1",
+    "pg": "^8.11.0"
+  }
+}
