@@ -1,17 +1,14 @@
-Copy and paste this into your GitHub `README.md`:
-
-```markdown
 # 🚀 PlaceMate
 
 ### Smart Classroom & Equipment Booking Platform
 
-PlaceMate is a centralized booking platform designed for colleges and institutions to manage classroom and equipment reservations efficiently.
+PlaceMate is a centralized booking platform designed for colleges and educational institutions to manage classroom and equipment reservations efficiently.
 
-It provides a simple interface for users to browse resources, place booking requests, track approval status, and cancel bookings when required. Administrators can review and manage all booking requests from a dedicated dashboard.
+It provides an intuitive interface for users to browse resources, submit booking requests, track approval status, and cancel bookings when needed. Administrators can manage all reservations through a dedicated dashboard.
 
 ---
 
-## ✨ Highlights
+## ✨ Features
 
 - 🏫 Classroom booking
 - 🎥 Equipment booking
@@ -19,42 +16,44 @@ It provides a simple interface for users to browse resources, place booking requ
 - ✅ Admin approval and rejection workflow
 - 👤 User authentication with login and signup
 - 📋 Personal booking history
-- ❌ Cancel classroom or equipment bookings
+- ❌ Classroom and equipment booking cancellation
 - 📊 Admin booking management dashboard
-- 📁 File upload endpoint support
+- 📁 File upload endpoint
 - 🌐 Responsive web interface
-- ⚡ REST API powered by Node.js and Express
+- ⚡ REST API built with Node.js and Express.js
 - 🗄️ MySQL database integration
 
 ---
 
 ## 🧠 Smart Booking Protection
 
-PlaceMate prevents conflicting bookings across the entire system.
+PlaceMate prevents overlapping reservations across the entire system, including bookings for different classrooms and equipment.
 
-For example, if a classroom is booked from:
+For example, if a resource is booked from **10:00 AM to 11:00 AM**, another booking that overlaps this time slot on the same date will be rejected.
 
-```text
-10:00 AM - 11:00 AM
-```
-
-another classroom or equipment cannot be booked during an overlapping time slot on the same date.
-
-Back-to-back bookings are allowed:
+**Example of conflicting bookings:**
 
 ```text
-10:00 AM - 11:00 AM
-11:00 AM - 12:00 PM
+Booking 1: 10:00 AM - 11:00 AM
+Booking 2: 10:30 AM - 11:30 AM
+Result: HTTP 409 Conflict
 ```
 
-The backend uses transactional database logic and a MySQL advisory lock to prevent simultaneous requests from creating duplicate bookings.
+**Back-to-back bookings are allowed:**
+
+```text
+Booking 1: 10:00 AM - 11:00 AM
+Booking 2: 11:00 AM - 12:00 PM
+Result: Allowed
+```
+
+The backend uses transactional database logic and a MySQL advisory lock to help prevent concurrent requests from creating conflicting bookings.
 
 ---
 
 ## 🛠️ Technology Stack
 
 ### Frontend
-
 - HTML5
 - CSS3
 - JavaScript
@@ -62,7 +61,6 @@ The backend uses transactional database logic and a MySQL advisory lock to preve
 - Responsive UI design
 
 ### Backend
-
 - Node.js
 - Express.js
 - MySQL
@@ -73,7 +71,6 @@ The backend uses transactional database logic and a MySQL advisory lock to preve
 - bcryptjs
 
 ### Additional Components
-
 - gRPC service definitions
 - Docker configuration
 - Kubernetes deployment manifests
@@ -85,25 +82,24 @@ The backend uses transactional database logic and a MySQL advisory lock to preve
 
 ```text
 placemate/
-│
-├── Index.html                 # Home page
-├── about.html                 # About page
-├── admin.html                 # Admin dashboard
-├── booking.html               # Classroom booking form
-├── equipment.html             # Equipment listing
-├── equipment-booking.html     # Equipment booking form
-├── login.html                 # Login page
-├── signup.html                # Signup page
-├── profile.html               # User profile and booking history
-├── venues.html                # Classroom listing
-├── styles.css                 # Global styles
-├── script.js                  # Frontend logic
+├── Index.html
+├── about.html
+├── admin.html
+├── booking.html
+├── equipment.html
+├── equipment-booking.html
+├── login.html
+├── signup.html
+├── profile.html
+├── venues.html
+├── styles.css
+├── script.js
 │
 └── backend/
-    ├── server.js              # Express server entry point
-    ├── package.json            # Backend dependencies
+    ├── server.js
+    ├── package.json
     ├── config/
-    │   └── database.js         # MySQL connection pool
+    │   └── database.js
     ├── controllers/
     │   └── bookingController.js
     ├── routes/
@@ -115,16 +111,18 @@ placemate/
     └── k8s/
 ```
 
+*Note: The structure above reflects the intended project layout. Adjust it to match the files and folders actually present in your repository.*
+
 ---
 
 ## ⚙️ Prerequisites
 
-Before running PlaceMate, install:
+Install the following before running PlaceMate:
 
 - Node.js 18 or later
 - npm
 - MySQL 8 or later
-- Python 3, for the frontend static server
+- Python 3 (for serving the frontend locally)
 
 Verify your installations:
 
@@ -139,14 +137,16 @@ python --version
 
 ## 🚀 Installation
 
-Clone the repository:
+### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/sarveshchoudhary/placemate.git
 cd placemate
 ```
 
-Install frontend dependencies:
+### 2. Install Dependencies
+
+Install root-level dependencies if your project has a root `package.json`:
 
 ```bash
 npm install
@@ -164,13 +164,9 @@ cd ..
 
 ## 🔐 Environment Configuration
 
-Create a file named:
+Create a `.env` file inside the `backend` directory.
 
-```text
-backend/.env
-```
-
-Use the following format:
+**File:** `backend/.env`
 
 ```env
 PORT=3002
@@ -182,27 +178,37 @@ MYSQL_USER=root
 MYSQL_PASSWORD=your_mysql_password
 ```
 
-> Never commit `backend/.env` to GitHub. It contains private database credentials.
+Replace `your_mysql_password` with your local MySQL password.
+
+> **Security:** Never commit your `.env` file or database credentials to GitHub. Add `.env` to your `.gitignore` file.
 
 ---
 
 ## 🗄️ Database Configuration
 
-Create a MySQL database named:
+Make sure your MySQL server is running.
+
+Create the database:
 
 ```sql
 CREATE DATABASE pm_db;
 ```
 
-Configure the required booking and user tables according to the backend model and controller definitions.
+Select the database:
 
-Make sure MySQL is running before starting the backend.
+```sql
+USE pm_db;
+```
+
+Create the required tables using the schema expected by the backend models and controllers.
+
+**Important:** Creating the database alone does not create the user and booking tables. Ensure the required schema is available before starting the application.
 
 ---
 
 ## ▶️ Running the Application
 
-### Start the backend
+### 1. Start the Backend
 
 Open a terminal:
 
@@ -211,15 +217,21 @@ cd backend
 npm start
 ```
 
-The backend will run at:
+The backend should be available at:
 
 ```text
 http://localhost:3002
 ```
 
-### Start the frontend
+You can check the backend status by opening:
 
-Open another terminal from the project root:
+```text
+http://localhost:3002/
+```
+
+### 2. Start the Frontend
+
+Open a second terminal from the project root:
 
 ```bash
 python -m http.server 5500 --bind 127.0.0.1
@@ -227,21 +239,23 @@ python -m http.server 5500 --bind 127.0.0.1
 
 Open the application in your browser:
 
-```text
-http://127.0.0.1:5500/Index.html
-```
+**http://127.0.0.1:5500/Index.html**
+
+Make sure the frontend API configuration points to the backend running at `http://localhost:3002`.
 
 ---
 
 ## 🔌 Main API Endpoints
 
+The following endpoints describe the application's API interface. Confirm their implementation in the backend before relying on them.
+
 | Method | Endpoint | Description |
-|--------|----------|-------------|
+|---|---|---|
 | `GET` | `/` | Check backend status |
 | `POST` | `/api/signup` | Register a new user |
 | `POST` | `/api/login` | Authenticate a user |
 | `POST` | `/api/logout` | Log out a user |
-| `POST` | `/api/book` | Create classroom or equipment booking |
+| `POST` | `/api/book` | Create a classroom or equipment booking |
 | `GET` | `/api/bookings` | Retrieve all bookings |
 | `GET` | `/api/my-bookings?email=...` | Retrieve a user's bookings |
 | `DELETE` | `/api/bookings/venue/:id` | Cancel a classroom booking |
@@ -258,7 +272,7 @@ http://127.0.0.1:5500/Index.html
 3. Select a date and time.
 4. Submit a booking request.
 5. Wait for administrator approval.
-6. View booking status from the profile page.
+6. View booking details and approval status on the profile page.
 7. Cancel a booking when necessary.
 
 ---
@@ -267,110 +281,111 @@ http://127.0.0.1:5500/Index.html
 
 Administrators can:
 
-- View all classroom bookings
-- View all equipment bookings
-- Approve booking requests
-- Reject booking requests
-- Monitor booking dates and time slots
-- Manage the reservation workflow from one dashboard
+- View classroom and equipment bookings.
+- Approve or reject booking requests.
+- Monitor reservation dates and time slots.
+- Manage booking requests through the admin dashboard.
 
 ---
 
 ## 🔒 Security and Reliability
 
-PlaceMate includes:
+PlaceMate incorporates the following security and reliability measures, where implemented in the backend:
 
-- Password hashing using `bcryptjs`
-- Parameterized MySQL queries
-- User-owned booking cancellation
-- Server-side booking validation
-- Overlapping time-slot prevention
-- Transactional booking creation
-- MySQL advisory locking for concurrent requests
-- Environment-based configuration
-- Sensitive credential protection through `.gitignore`
+- Password hashing with `bcryptjs`.
+- Parameterized MySQL queries.
+- User-owned booking cancellation.
+- Server-side booking validation.
+- Overlapping time-slot prevention.
+- Transactional booking creation.
+- MySQL advisory locking for concurrent requests.
+- Environment-based configuration.
+- Protection of sensitive credentials through `.gitignore`.
 
 ---
 
 ## 🧪 Testing the Booking Conflict Rule
 
-To test the conflict prevention:
+To test booking conflict prevention:
 
-1. Create a booking for a date and time.
-2. Try creating another booking that overlaps the same time.
-3. The second request should return:
+1. Create a booking for a specific date and time.
+2. Submit another booking that overlaps the existing time slot.
+3. Verify that the second request is rejected.
+
+**Expected HTTP status:**
 
 ```text
-HTTP 409 Conflict
+409 Conflict
 ```
 
-Expected message:
+**Expected response message:**
 
 ```text
 This date and time are already booked. Please choose another slot.
 ```
 
+Also test back-to-back bookings to verify that adjacent time slots are accepted.
+
 ---
 
-## 📸 Application Features
+## 📸 Application Pages
 
-PlaceMate includes dedicated pages for:
+The application includes pages for:
 
 - Home
+- About
 - Classrooms
 - Equipment
 - Classroom booking
 - Equipment booking
-- Login
-- Signup
-- User profile
+- Login and signup
+- User profile and booking history
 - Admin dashboard
 - Reviews
 - Contact
-- About
 
 ---
 
 ## 🌱 Future Improvements
 
-Planned enhancements include:
+Potential enhancements include:
 
-- Real-time availability calendar
-- Email notifications
-- Role-based authentication
-- Improved database migrations
-- Automated testing
-- Booking analytics
-- Mobile application support
-- Cloud deployment
-- Payment integration
-- Advanced equipment quantity management
+- Real-time availability calendar.
+- Email notifications.
+- Stronger role-based access control.
+- Database migrations and schema versioning.
+- Automated unit and integration testing.
+- Booking analytics and reporting.
+- Mobile application support.
+- Cloud deployment.
+- Payment integration.
+- Advanced equipment quantity management.
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are welcome.
+Contributions are welcome!
 
 1. Fork the repository.
 2. Create a feature branch:
 
-```bash
-git checkout -b feature/your-feature-name
-```
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
 
 3. Make your changes.
 4. Commit your changes:
 
-```bash
-git commit -m "Add your feature"
-```
+   ```bash
+   git commit -m "Add your feature"
+   ```
 
-5. Push the branch:
+5. Push your branch:
 
-```bash
-git push origin feature/your-feature-name
-```
+   ```bash
+   git push origin feature/your-feature-name
+   ```
 
 6. Open a Pull Request.
 
@@ -380,15 +395,13 @@ git push origin feature/your-feature-name
 
 ### Sarvesh Choudhary
 
-GitHub: [@sarveshchoudhary](https://github.com/sarveshchoudhary)
-
-Project Repository: [github.com/sarveshchoudhary/placemate](https://github.com/sarveshchoudhary/placemate)
+- **GitHub:** [@sarveshchoudhary](https://github.com/sarveshchoudhary)
+- **Project Repository:** [PlaceMate on GitHub](https://github.com/sarveshchoudhary/placemate)
 
 ---
 
 ## 📄 License
 
-This project is currently intended for educational and institutional use.
+This project is intended for educational and institutional use.
 
-Add a suitable open-source license before distributing the project publicly.
-```
+Before distributing it publicly as an open-source project, add an appropriate license, such as the MIT License, if its terms suit your intended use.
